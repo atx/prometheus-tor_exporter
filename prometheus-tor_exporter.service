@@ -1,0 +1,10 @@
+[Unit]
+Description=Prometheus exporter for Tor
+Depends=tor.service
+
+[Service]
+ExecStart=/usr/bin/prometheus-tor_exporter.py
+User=debian-tor
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,5 @@
+prometheus-tor-exporter (0.1) UNRELEASED; urgency=medium
+
+  * Initial release.
+
+ -- Josef Gajdusek <atx@atx.name>  Sun, 07 May 2017 13:07:54 +0000

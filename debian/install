@@ -1,0 +1,2 @@
+prometheus-tor_exporter.py usr/bin/
+prometheus-tor_exporter.service lib/systemd/system
