@@ -1,2 +1,2 @@
-prometheus-tor_exporter.py usr/bin/
-prometheus-tor_exporter.service lib/systemd/system
+prometheus-tor-exporter.py usr/bin/
+prometheus-tor-exporter.service lib/systemd/system
