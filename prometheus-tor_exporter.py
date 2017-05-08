@@ -16,8 +16,8 @@ class StemCollector:
     def collect(self):
         self.tor.reconnect()
         yield GaugeMetricFamily(
-                    "tor_transmit_bytes",
-                    "Tor transmitted data counter",
+                    "tor_written_bytes",
+                    "Tor written data counter",
                     value=int(self.tor.get_info("traffic/written")))
         yield GaugeMetricFamily(
                     "tor_read_bytes",
