@@ -52,6 +52,70 @@ class StemCollector:
                                 "Indicates whether Tor is currently active and building circuits (note that 0 corresponds to Tor being active)",
                                 value=int(self.tor.get_info("dormant")))
 
+        effective_rate = self.tor.get_effective_rate(None)
+        effective_burst_rate = self.tor.get_effective_rate(None, burst=True)
+        if effective_rate is not None and effective_burst_rate is not None:
+            yield GaugeMetricFamily("tor_effective_rate",
+                                    "Shows Tor effective rate",
+                                    value=int(effective_rate))
+            yield GaugeMetricFamily("tor_effective_burst_rate",
+                                    "Shows Tor effective burst rate",
+                                    value=int(effective_burst_rate))
+
+        fingerprint = GaugeMetricFamily("tor_fingerprint",
+                                        "Tor fingerprint as a label",
+                                        labels=["fingerprint"])
+        fingerprint.add_metric([self.tor.get_info("fingerprint")], 1)
+        yield fingerprint
+        nickname = GaugeMetricFamily("tor_nickname",
+                                     "Tor nickname as a label",
+                                     labels=["nickname"])
+        nickname.add_metric([self.tor.get_conf("Nickname", "Unnamed")], 1)
+        yield nickname
+
+        # Connection counting
+        # This won't work/will return wrong results if we are not running on
+        # the same box as the Tor daemon is.
+        # DisableDebuggerAttachment has to be set to 0
+        # TODO: Count individual OUT/DIR/Control connections, see arm sources
+        # for reference
+        try:
+            connections = stem.util.connection.get_connections(
+                                                process_pid=self.tor.get_pid())
+            yield GaugeMetricFamily("tor_connection_count",
+                                    "Amount of connections the Tor daemon has open",
+                                    value=len(connections))
+        except OSError:
+            # This happens if the PID does not exists (on another machine).
+            pass
+        has_flags = self.tor.get_network_status().flags
+        flags = GaugeMetricFamily("tor_flags", "Has a Tor flag", labels=["flag"])
+        for flag in ["Authority", "BadExit", "Exit", "Fast", "Guard", "HSDir",
+                     "NoEdConsensus", "Stable", "Running", "Valid", "V2Dir"]:
+            flags.add_metric([flag], int(flag in has_flags))
+        yield flags
+
+        accs = self.tor.get_accounting_stats()
+        yield GaugeMetricFamily("tor_accounting_read_bytes",
+                                "Tor accounting read bytes",
+                                accs.read_bytes)
+        yield GaugeMetricFamily("tor_accounting_left_read_bytes",
+                                "Tor accounting read bytes left",
+                                accs.read_bytes_left)
+        yield GaugeMetricFamily("tor_accounting_read_limit_bytes",
+                                "Tor accounting read bytes limit",
+                                accs.read_limit)
+        yield GaugeMetricFamily("tor_accounting_write_bytes",
+                                "Tor accounting write bytes",
+                                accs.written_bytes)
+        yield GaugeMetricFamily("tor_accounting_left_write_bytes",
+                                "Tor accounting write bytes left",
+                                accs.write_bytes_left)
+        yield GaugeMetricFamily("tor_accounting_write_limit_bytes",
+                                "Tor accounting write bytes limit",
+                                accs.write_limit)
+
+
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
