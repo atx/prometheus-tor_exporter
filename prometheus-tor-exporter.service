@@ -3,7 +3,8 @@ Description=Prometheus exporter for Tor
 Depends=tor.service
 
 [Service]
-ExecStart=/usr/bin/prometheus-tor-exporter.py
+EnvironmentFile=-/etc/default/prometheus-tor-exporter
+ExecStart=/usr/bin/prometheus-tor-exporter.py $ARGS
 User=debian-tor
 
 [Install]

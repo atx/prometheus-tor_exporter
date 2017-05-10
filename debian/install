@@ -1,2 +1,3 @@
 prometheus-tor-exporter.py usr/bin/
 prometheus-tor-exporter.service lib/systemd/system
+debian/etc/default/prometheus-tor-exporter /etc/default/
