@@ -88,7 +88,12 @@ class StemCollector:
         except OSError:
             # This happens if the PID does not exists (on another machine).
             pass
-        has_flags = self.tor.get_network_status().flags
+        try:
+            has_flags = self.tor.get_network_status().flags
+        except stem.DescriptorUnavailable:
+            # The tor daemon fails with this for a few minutes after startup
+            # (before figuring out its own flags?)
+            has_flags = []
         flags = GaugeMetricFamily("tor_flags", "Has a Tor flag", labels=["flag"])
         for flag in ["Authority", "BadExit", "Exit", "Fast", "Guard", "HSDir",
                      "NoEdConsensus", "Stable", "Running", "Valid", "V2Dir"]:
