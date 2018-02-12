@@ -1,3 +1,9 @@
+prometheus-tor-exporter (0.2) UNRELEASED; urgency=medium
+
+  * Add tor_uptime metric
+
+ -- Josef Gajdusek <atx@atx.name>  Mon, 12 Feb 2018 21:47:50 +0100
+
 prometheus-tor-exporter (0.1) UNRELEASED; urgency=medium
 
   * Initial release.
