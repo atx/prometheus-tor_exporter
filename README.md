@@ -80,6 +80,7 @@ tor_accounting_read_limit_bytes | Read byte limit in the current accounting peri
 tor_accounting_write_bytes | Amount of bytes written in the current accounting period
 tor_accounting_left_write_bytes | Amount of write bytes left in the current accounting period
 tor_accounting_write_limit_bytes | Write byte limit in the current accounting period
+tor_uptime | Uptime of the tor process (in seconds)
 
 
 A more in-depth explanation of the various variables can be found in the [control port manual](https://gitweb.torproject.org/torspec.git/tree/control-spec.txt)

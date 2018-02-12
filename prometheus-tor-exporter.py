@@ -80,11 +80,18 @@ class StemCollector:
         # TODO: Count individual OUT/DIR/Control connections, see arm sources
         # for reference
         try:
+            tor_pid = self.tor.get_pid()
             connections = stem.util.connection.get_connections(
-                                                process_pid=self.tor.get_pid())
+                                                process_pid=tor_pid)
             yield GaugeMetricFamily("tor_connection_count",
                                     "Amount of connections the Tor daemon has open",
                                     value=len(connections))
+            # Let's hope this does not break when there is NTP sync or
+            # something
+            uptime = time.time() - stem.util.system.start_time(tor_pid)
+            yield GaugeMetricFamily("tor_uptime",
+                                    "Tor daemon uptime",
+                                    value=uptime)
         except OSError:
             # This happens if the PID does not exists (on another machine).
             pass
