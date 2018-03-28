@@ -1,4 +1,5 @@
 #! /usr/bin/env python3
+# Source: https://github.com/atx/prometheus-tor_exporter/blob/master/prometheus-tor-exporter.py
 
 import argparse
 import stem
@@ -62,11 +63,16 @@ class StemCollector:
                                     "Shows Tor effective burst rate",
                                     value=int(effective_burst_rate))
 
-        fingerprint = GaugeMetricFamily("tor_fingerprint",
-                                        "Tor fingerprint as a label",
-                                        labels=["fingerprint"])
-        fingerprint.add_metric([self.tor.get_info("fingerprint")], 1)
-        yield fingerprint
+        try:
+            fingerprint_value = self.tor.get_info("fingerprint")
+            fingerprint = GaugeMetricFamily("tor_fingerprint",
+                                            "Tor fingerprint as a label",
+                                            labels=["fingerprint"])
+            fingerprint.add_metric([fingerprint_value], 1)
+            yield fingerprint
+        except stem.ProtocolError:
+            # happens when not running in server mode
+            pass
         nickname = GaugeMetricFamily("tor_nickname",
                                      "Tor nickname as a label",
                                      labels=["nickname"])
