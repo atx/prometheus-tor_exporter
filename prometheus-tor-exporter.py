@@ -138,11 +138,13 @@ if __name__ == "__main__":
     parser.add_argument(
         "-c", "--control-port",
         help="Tor control port",
+        type=int,
         default=9051
     )
     parser.add_argument(
         "-p", "--listen-port",
         help="Listen on this port",
+        type=int,
         default=9099
     )
     parser.add_argument(
