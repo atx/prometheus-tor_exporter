@@ -5,17 +5,29 @@ import argparse
 import stem
 import stem.control
 import time
+from retrying import retry
 import prometheus_client as prom
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
+
 
 class StemCollector:
 
     def __init__(self, tor):
         self.tor = tor
+        self.authenticate()
+        self.reconnect()
+
+    @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=5)
+    def authenticate(self):
+        self.tor.authenticate()
+
+    @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=5)
+    def reconnect(self):
         self.tor.reconnect()
 
     def collect(self):
-        self.tor.reconnect()
+        self.reconnect()
+
         yield GaugeMetricFamily(
                     "tor_written_bytes",
                     "Tor written data counter",
@@ -162,8 +174,6 @@ if __name__ == "__main__":
 
     torctl = stem.control.Controller.from_port(args.address,
                                                port=args.control_port)
-    torctl.authenticate()
-
     coll = StemCollector(torctl)
     REGISTRY.register(coll)
 
