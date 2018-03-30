@@ -119,31 +119,38 @@ class StemCollector:
             # The tor daemon fails with this for a few minutes after startup
             # (before figuring out its own flags?)
             has_flags = []
+        except stem.ControllerError:
+            # Happens when the daemon is not running in server mode
+            has_flags = []
         flags = GaugeMetricFamily("tor_flags", "Has a Tor flag", labels=["flag"])
         for flag in ["Authority", "BadExit", "Exit", "Fast", "Guard", "HSDir",
                      "NoEdConsensus", "Stable", "Running", "Valid", "V2Dir"]:
             flags.add_metric([flag], int(flag in has_flags))
         yield flags
 
-        accs = self.tor.get_accounting_stats()
-        yield GaugeMetricFamily("tor_accounting_read_bytes",
-                                "Tor accounting read bytes",
-                                accs.read_bytes)
-        yield GaugeMetricFamily("tor_accounting_left_read_bytes",
-                                "Tor accounting read bytes left",
-                                accs.read_bytes_left)
-        yield GaugeMetricFamily("tor_accounting_read_limit_bytes",
-                                "Tor accounting read bytes limit",
-                                accs.read_limit)
-        yield GaugeMetricFamily("tor_accounting_write_bytes",
-                                "Tor accounting write bytes",
-                                accs.written_bytes)
-        yield GaugeMetricFamily("tor_accounting_left_write_bytes",
-                                "Tor accounting write bytes left",
-                                accs.write_bytes_left)
-        yield GaugeMetricFamily("tor_accounting_write_limit_bytes",
-                                "Tor accounting write bytes limit",
-                                accs.write_limit)
+        try:
+            accs = self.tor.get_accounting_stats()
+            yield GaugeMetricFamily("tor_accounting_read_bytes",
+                                    "Tor accounting read bytes",
+                                    accs.read_bytes)
+            yield GaugeMetricFamily("tor_accounting_left_read_bytes",
+                                    "Tor accounting read bytes left",
+                                    accs.read_bytes_left)
+            yield GaugeMetricFamily("tor_accounting_read_limit_bytes",
+                                    "Tor accounting read bytes limit",
+                                    accs.read_limit)
+            yield GaugeMetricFamily("tor_accounting_write_bytes",
+                                    "Tor accounting write bytes",
+                                    accs.written_bytes)
+            yield GaugeMetricFamily("tor_accounting_left_write_bytes",
+                                    "Tor accounting write bytes left",
+                                    accs.write_bytes_left)
+            yield GaugeMetricFamily("tor_accounting_write_limit_bytes",
+                                    "Tor accounting write bytes limit",
+                                    accs.write_limit)
+        except stem.ControllerError:
+            # happens when accounting isn't enabled
+            pass
 
 
 if __name__ == "__main__":
