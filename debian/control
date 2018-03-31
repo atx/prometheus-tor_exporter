@@ -13,6 +13,6 @@ Homepage: https://github.com/atalax/prometheus-tor_exporter
 Package: prometheus-tor-exporter
 Architecture: all
 Section: net
-Depends: python3-stem, python3-prometheus-client, ${misc:Depends}, ${python3:Depends}
+Depends: python3-stem, python3-prometheus-client, python3-retrying, ${misc:Depends}, ${python3:Depends}
 Description: Prometheus exporter for Tor node metrics
  Prometheus exporter for Tor node mtrics, written in Python using the Stem library

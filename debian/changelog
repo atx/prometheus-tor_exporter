@@ -1,3 +1,10 @@
+prometheus-tor-exporter (0.3) UNRELEASED; urgency=medium
+
+  * Handle tor not running in server mode correctly
+  * Use python3-retrying to be more robust about connection failures
+
+ -- Josef Gajdusek <atx@atx.name>  Sat, 31 Mar 2018 22:24:34 +0200
+
 prometheus-tor-exporter (0.2) UNRELEASED; urgency=medium
 
   * Add tor_uptime metric
