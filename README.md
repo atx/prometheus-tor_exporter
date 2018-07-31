@@ -9,8 +9,8 @@ Prometheus exporter for the TOR daemon.
 Get the latest [release](https://github.com/atalax/prometheus-tor_exporter/releases/latest/) and install using dpkg.
 
 ```
-wget 'https://github.com/atalax/prometheus-tor_exporter/releases/download/v0.1/prometheus-tor-exporter_0.1_all.deb'
-dpkg -i prometheus-tor-exporter_0.1_all.deb
+wget 'https://github.com/atx/prometheus-tor_exporter/releases/download/v0.3/prometheus-tor-exporter_0.3_all.deb'
+dpkg -i prometheus-tor-exporter_0.3_all.deb
 apt install -f
 ```
 
@@ -21,7 +21,7 @@ apt install git debhelper devscripts
 git clone https://github.com/atalax/prometheus-tor_exporter
 cd prometheus-tor_exporter
 debuild --no-tgz-check -uc -us
-dpkg -i ../prometheus-tor-exporter_0.1_all.deb
+dpkg -i ../prometheus-tor-exporter_0.3_all.deb
 ```
 
 Afterwards, you need to enable the installed systemd service.
