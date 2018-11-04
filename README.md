@@ -3,6 +3,8 @@ Prometheus exporter for the TOR daemon.
 
 ![prometheus-tor-exporter](https://user-images.githubusercontent.com/3966931/27349994-5cec464c-55f9-11e7-805a-2aea50413f2a.png)
 
+_(the JSON descriptor file for this dashboard can be found [here](https://gist.github.com/atx/f4d12616eaac919b6764109ffd470c99))_ 
+
 
 ## Installation
 
