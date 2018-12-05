@@ -8,7 +8,7 @@ _(the JSON descriptor file for this dashboard can be found [here](https://gist.g
 
 ## Installation
 
-Get the latest [release](https://github.com/atalax/prometheus-tor_exporter/releases/latest/) and install using dpkg.
+Get the latest [release](https://github.com/atx/prometheus-tor_exporter/releases/latest/) and install using dpkg.
 
 ```
 wget 'https://github.com/atx/prometheus-tor_exporter/releases/download/v0.3/prometheus-tor-exporter_0.3_all.deb'
@@ -20,7 +20,7 @@ You can also build from source.
 
 ```
 apt install git debhelper devscripts
-git clone https://github.com/atalax/prometheus-tor_exporter
+git clone https://github.com/atx/prometheus-tor_exporter
 cd prometheus-tor_exporter
 debuild --no-tgz-check -uc -us
 dpkg -i ../prometheus-tor-exporter_0.3_all.deb
@@ -34,7 +34,7 @@ systemctl enable --now prometheus-tor-exporter
 
 ## Configuration
 
-prometheus-tor_exporter is configured using the `/etc/default/prometheus-tor_exporter`
+prometheus-tor_exporter is configured using the `/etc/default/prometheus-tor-exporter`
 
 ```
 # Additional parameters for prometheus-tor-exporter
