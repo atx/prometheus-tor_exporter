@@ -82,7 +82,7 @@ class StemCollector:
                                             labels=["fingerprint"])
             fingerprint.add_metric([fingerprint_value], 1)
             yield fingerprint
-        except stem.ProtocolError:
+        except (stem.ProtocolError, stem.OperationFailed):
             # happens when not running in server mode
             pass
         nickname = GaugeMetricFamily("tor_nickname",
