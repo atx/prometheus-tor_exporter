@@ -156,6 +156,12 @@ class StemCollector:
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
     parser.add_argument(
+        "-m", "--mode",
+        help="Tor socker control mode (tcp or unix, default tcp)",
+        default="tcp",
+        choices=['tcp', 'unix']
+    )
+    parser.add_argument(
         "-a", "--address",
         help="Tor control IP address",
         default="127.0.0.1"
@@ -165,6 +171,11 @@ if __name__ == "__main__":
         help="Tor control port",
         type=int,
         default=9051
+    )
+    parser.add_argument(
+        "-s", "--control-socket",
+        help="Tor control socket",
+        default="/var/run/tor/control"
     )
     parser.add_argument(
         "-p", "--listen-port",
@@ -179,8 +190,11 @@ if __name__ == "__main__":
     )
     args = parser.parse_args()
 
-    torctl = stem.control.Controller.from_port(args.address,
-                                               port=args.control_port)
+    if args.mode == 'unix':
+        torctl = stem.control.Controller.from_socket_file(args.control_socket)
+    else:
+        torctl = stem.control.Controller.from_port(args.address,
+                                                   port=args.control_port)
     coll = StemCollector(torctl)
     REGISTRY.register(coll)
 
