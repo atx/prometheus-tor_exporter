@@ -110,7 +110,7 @@ class StemCollector:
             yield GaugeMetricFamily("tor_uptime",
                                     "Tor daemon uptime",
                                     value=uptime)
-        except OSError:
+        except (OSError, IOError):
             # This happens if the PID does not exists (on another machine).
             pass
         try:
