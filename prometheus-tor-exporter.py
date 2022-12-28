@@ -32,6 +32,7 @@ class StemCollector:
                     "tor_written_bytes",
                     "Tor written data counter",
                     value=int(self.tor.get_info("traffic/written")))
+
         yield GaugeMetricFamily(
                     "tor_read_bytes",
                     "Tor received data counter",
@@ -41,50 +42,67 @@ class StemCollector:
                                     labels=["version"])
         version.add_metric([str(torctl.get_version())], 1)
         yield version
+
         version_status = GaugeMetricFamily(
-                            "tor_version_status",
-                            "Tor version status {new, old, unrecommended, recommended, new in series, obsolete, unknown} as a label",
-                            labels=["version_status"])
-        version_status.add_metric([self.tor.get_info("status/version/current")], 1)
+                    "tor_version_status",
+                    "Tor version status {new, old, unrecommended, "
+                    "recommended, new in series, obsolete, unknown} as a "
+                    "label",
+                    labels=["version_status"])
+        version_status.add_metric(
+                    [self.tor.get_info("status/version/current")], 1)
         yield version_status
-        yield GaugeMetricFamily("tor_network_liveness",
-                                "Indicates whether tor believes that the network is currently reachable",
-                                value=int(self.tor.get_info("network-liveness") == "up"))
-        reachable = GaugeMetricFamily("tor_reachable",
-                                      "Indicates whether our OR/Dir port is reachable",
-                                      labels=["port"])
+
+        yield GaugeMetricFamily(
+                "tor_network_liveness",
+                "Indicates whether tor believes that the network is currently "
+                "reachable",
+                value=int(self.tor.get_info("network-liveness") == "up"))
+
+        reachable = GaugeMetricFamily(
+                "tor_reachable",
+                "Indicates whether tor OR/Dir port is reachable",
+                labels=["port"])
         for entry in self.tor.get_info("status/reachability-succeeded").split():
             k, v = entry.split("=")
             reachable.add_metric([k], int(v))
         yield reachable
-        yield GaugeMetricFamily("tor_circuit_established",
-                                "Indicates whether Tor is capable of establishing circuits",
-                                value=int(self.tor.get_info("status/circuit-established")))
-        # For some reason, 0 actually means that Tor is active, keep it that way
-        yield GaugeMetricFamily("tor_dormant",
-                                "Indicates whether Tor is currently active and building circuits (note that 0 corresponds to Tor being active)",
-                                value=int(self.tor.get_info("dormant")))
+
+        yield GaugeMetricFamily(
+                "tor_circuit_established",
+                "Indicates whether Tor is capable of establishing circuits",
+                value=int(self.tor.get_info("status/circuit-established")))
+
+        # For some reason, 0 actually means that Tor is active.
+        # Keep it that way.
+        yield GaugeMetricFamily(
+                "tor_dormant",
+                "Indicates whether Tor is currently active and building "
+                "circuits (note that 0 corresponds to Tor being active)",
+                value=int(self.tor.get_info("dormant")))
 
         effective_rate = self.tor.get_effective_rate(None)
         effective_burst_rate = self.tor.get_effective_rate(None, burst=True)
         if effective_rate is not None and effective_burst_rate is not None:
             yield GaugeMetricFamily("tor_effective_rate",
-                                    "Shows Tor effective rate",
+                                    "Tor effective bandwidth rate",
                                     value=int(effective_rate))
             yield GaugeMetricFamily("tor_effective_burst_rate",
-                                    "Shows Tor effective burst rate",
+                                    "Tor effective burst bandwidth rate",
                                     value=int(effective_burst_rate))
 
         try:
             fingerprint_value = self.tor.get_info("fingerprint")
-            fingerprint = GaugeMetricFamily("tor_fingerprint",
-                                            "Tor fingerprint as a label",
-                                            labels=["fingerprint"])
+            fingerprint = GaugeMetricFamily(
+                    "tor_fingerprint",
+                    "Tor server fingerprint as a label",
+                    labels=["fingerprint"])
             fingerprint.add_metric([fingerprint_value], 1)
             yield fingerprint
         except (stem.ProtocolError, stem.OperationFailed):
             # happens when not running in server mode
             pass
+
         nickname = GaugeMetricFamily("tor_nickname",
                                      "Tor nickname as a label",
                                      labels=["nickname"])
@@ -101,18 +119,14 @@ class StemCollector:
             tor_pid = self.tor.get_pid()
             connections = stem.util.connection.get_connections(
                                                 process_pid=tor_pid)
-            yield GaugeMetricFamily("tor_connection_count",
-                                    "Amount of connections the Tor daemon has open",
-                                    value=len(connections))
-            # Let's hope this does not break when there is NTP sync or
-            # something
-            uptime = time.time() - stem.util.system.start_time(tor_pid)
-            yield GaugeMetricFamily("tor_uptime",
-                                    "Tor daemon uptime",
-                                    value=uptime)
+            yield GaugeMetricFamily(
+                    "tor_connection_count",
+                    "Amount of connections the Tor daemon has open",
+                    value=len(connections))
         except (OSError, IOError):
             # This happens if the PID does not exists (on another machine).
             pass
+
         try:
             has_flags = self.tor.get_network_status().flags
         except stem.DescriptorUnavailable:
@@ -152,6 +166,9 @@ class StemCollector:
             # happens when accounting isn't enabled
             pass
 
+        yield GaugeMetricFamily("tor_uptime",
+                                "Tor daemon uptime in seconds",
+                                value=int(self.tor.get_info("uptime")))
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
