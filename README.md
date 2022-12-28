@@ -81,6 +81,7 @@ tor_effective_burst_rate | Shows the effective burst rate of the relay
 tor_fingerprint{fingerprint="..."} | Node fingerprint as a tag
 tor_nickname{nickname="..."} | Node nickname as a tag
 tor_flags{flag="Authority\|BadExit\|Exit\|Fast\|<br/>Guard\|HSDir\|NoEdConsensus\|Stable\|<br/>Running\|Valid\|V2Dir"} | Indicates whether the node has a certain flag (1.0 or 0.0)
+tor_bridge_clients_seen{country="..."} | Tor bridge clients per country. Reset every 24 hours and only increased by multiples of 8
 tor_accounting_read_bytes | Amount of bytes read in the current accounting period
 tor_accounting_left_read_bytes | Amount of read bytes left in the current accounting period
 tor_accounting_read_limit_bytes | Read byte limit in the current accounting period

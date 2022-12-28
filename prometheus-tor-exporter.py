@@ -5,6 +5,7 @@ import argparse
 import stem
 import stem.control
 import time
+import re
 from retrying import retry
 import prometheus_client as prom
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
@@ -141,6 +142,22 @@ class StemCollector:
                      "NoEdConsensus", "Stable", "Running", "Valid", "V2Dir"]:
             flags.add_metric([flag], int(flag in has_flags))
         yield flags
+
+        regex = re.compile(".*CountrySummary=([a-z0-9=,]+)")
+        countrysum = regex.match(self.tor.get_info("status/clients-seen"))
+        if countrysum != None:
+            countrysum = countrysum.group(1).split(",")
+            bridge_clients_seen = GaugeMetricFamily(
+                        "tor_bridge_clients_seen",
+                        "Tor bridge clients per country. Reset every 24 hours "
+                        "and only increased by multiples of 8.",
+                        labels = ["country"])
+            countrycode = [c[:2] for c in countrysum]
+            countryclients = [int(c[3:]) for c in countrysum]
+            for i in range(len(countrycode)):
+                bridge_clients_seen.add_metric(
+                        [countrycode[i]], countryclients[i])
+            yield bridge_clients_seen
 
         try:
             accs = self.tor.get_accounting_stats()
