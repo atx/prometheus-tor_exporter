@@ -44,15 +44,20 @@ ARGS="-p 8800"
 The parameters can be listed py running `prometheus-tor-exporter.py -h`
 
 ```
-usage: prometheus-tor-exporter.py [-h] [-a ADDRESS] [-c CONTROL_PORT]
+usage: prometheus-tor-exporter.py [-h] [-m {tcp,unix}] [-a ADDRESS]
+                                  [-c CONTROL_PORT] [-s CONTROL_SOCKET]
                                   [-p LISTEN_PORT] [-b BIND_ADDR]
 
 optional arguments:
   -h, --help            show this help message and exit
+  -m {tcp,unix}, --mode {tcp,unix}
+                        Tor socker control mode (tcp or unix, default tcp)
   -a ADDRESS, --address ADDRESS
                         Tor control IP address
   -c CONTROL_PORT, --control-port CONTROL_PORT
                         Tor control port
+  -s CONTROL_SOCKET, --control-socket CONTROL_SOCKET
+                        Tor control socket
   -p LISTEN_PORT, --listen-port LISTEN_PORT
                         Listen on this port
   -b BIND_ADDR, --bind-addr BIND_ADDR
@@ -63,8 +68,8 @@ optional arguments:
 
   Name              |  Description
 --------------------|-----------------------
-tor_written_bytes   | Running total of written bytes.
-tor_read_bytes      | Running total of read bytes.
+tor_written_bytes   | Running total of written bytes
+tor_read_bytes      | Running total of read bytes
 tor_version{version="..."} | Tor daemon version as a tag
 tor_version_status={version_status="..."} | Tor daemon version status as a tag
 tor_network_liveness | Network liveness (1.0 or 0.0)
