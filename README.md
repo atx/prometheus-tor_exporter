@@ -64,6 +64,9 @@ optional arguments:
                         Bind this address
 ```
 
+The password (if any) used to authenticate to the Tor control socket is read
+from the environment variable `PROM_TOR_EXPORTER`.
+
 ## Exported metrics
 
   Name              |  Description

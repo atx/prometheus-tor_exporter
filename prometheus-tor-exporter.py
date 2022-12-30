@@ -6,25 +6,49 @@ import stem
 import stem.control
 import time
 import re
+import sys
+import os
 from retrying import retry
 import prometheus_client as prom
 from prometheus_client.core import GaugeMetricFamily, REGISTRY
 
+password_env_var = "PROM_TOR_EXPORTER_PASSWORD"
 
 class StemCollector:
 
     def __init__(self, tor):
         self.tor = tor
+
+        self.password = ""
+        try:
+            self.password = os.environ[password_env_var]
+        except:
+            pass
+
         self.authenticate()
         self.reconnect()
 
     @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=5)
     def authenticate(self):
-        self.tor.authenticate()
+        try:
+            self.tor.authenticate(password=self.password)
+        except stem.connection.IncorrectPassword:
+            print("Failed password authentication to the Tor control socket.\n"
+                    "The password is read from the environment variable "
+                    "{}.".format(password_env_var),
+                    file = sys.stderr)
+            sys.exit(1)
 
     @retry(wait_random_min=1000, wait_random_max=2000, stop_max_attempt_number=5)
     def reconnect(self):
-        self.tor.reconnect()
+        try:
+            self.tor.reconnect(password=self.password)
+        except stem.connection.IncorrectPassword:
+            print("Failed password authentication to the Tor control socket.\n"
+                    "The password is read from the environment variable "
+                    "{}.".format(password_env_var),
+                    file = sys.stderr)
+            sys.exit(1)
 
     def collect(self):
         self.reconnect()
